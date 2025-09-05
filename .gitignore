@@ -3,6 +3,7 @@ obj/
 *.o
 
 /test/data/
+*.runner
 
 # Executable files
 nanovm
