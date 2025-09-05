@@ -1,0 +1,20 @@
+# Compiled object files
+obj/
+*.o
+
+/test/data/
+
+# Executable files
+nanovm
+
+# Logs
+*.log
+
+# Editor/IDE files
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Compilation database
+compile_commands.json
