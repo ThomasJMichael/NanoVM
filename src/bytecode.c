@@ -6,12 +6,20 @@ InstructionInfo instruction_set[] = {
     {"POP", 1, 0, {OPERAND_NONE}},
     {"LOAD", 2, 1, {OPERAND_INDEX}},
     {"STORE", 2, 1, {OPERAND_INDEX}},
+    {"DUP", 1, 0, {OPERAND_NONE}},
+    {"SWAP", 1, 0, {OPERAND_NONE}},
+    {"OVER", 1, 0, {OPERAND_NONE}},
+    {"CLEAR", 1, 0, {OPERAND_NONE}},
+    {"PICK", 2, 1, {OPERAND_INDEX}},
 
     // Arithmetic
     {"ADD", 1, 0, {OPERAND_NONE}},
     {"SUB", 1, 0, {OPERAND_NONE}},
     {"MUL", 1, 0, {OPERAND_NONE}},
     {"DIV", 1, 0, {OPERAND_NONE}},
+    {"MOD", 1, 0, {OPERAND_NONE}},
+    {"INC", 1, 0, {OPERAND_NONE}},
+    {"DEC", 1, 0, {OPERAND_NONE}},
 
     // Comparison
     {"CMP_EQ", 1, 0, {OPERAND_NONE}},
@@ -24,11 +32,14 @@ InstructionInfo instruction_set[] = {
     // Control Flow
     {"JMP", 2, 1, {OPERAND_ADDRESS}},
     {"JMPZ", 2, 1, {OPERAND_ADDRESS}},
+    {"JMPNZ", 2, 1, {OPERAND_ADDRESS}},
     {"CALL", 2, 1, {OPERAND_ADDRESS}},
     {"RET", 1, 0, {OPERAND_NONE}},
+    {"NOP", 1, 0, {OPERAND_NONE}},
 
-    // Output
+    // I/O
     {"PRINT", 1, 0, {OPERAND_NONE}},
+    {"INPUT", 1, 0, {OPERAND_NONE}},
 
     // Halt
     {"HALT", 1, 0, {OPERAND_NONE}},

@@ -26,6 +26,7 @@ typedef struct {
 } Nano_VM;
 
 ErrorCode init_vm(Nano_VM *vm);
-ErrorCode load_program(Nano_VM *vm, const uint8_t *code, size_t code_size);
+ErrorCode load_program(Nano_VM *vm, const uint8_t *code, size_t code_size,
+                       uint32_t entry_point);
 ErrorCode free_vm(Nano_VM *vm);
 ErrorCode execute_vm(Nano_VM *vm);

@@ -41,7 +41,7 @@ ErrorCode parse_args(int argc, char *argv[], char **bytecode_file,
   }
 
   int opts;
-  while ((opts = getopt(argc, argv, "hfl:")) != -1) {
+  while ((opts = getopt(argc, argv, "hf:l:")) != -1) {
     switch (opts) {
     case 'h':
       printf("Usage: %s [options] <bytecode_file>\n", argv[0]);
@@ -49,7 +49,7 @@ ErrorCode parse_args(int argc, char *argv[], char **bytecode_file,
       printf("  -h                Show this help message\n");
       printf("  -f <file>         Specify the bytecode file to load\n");
       printf("  -l <file>  Output logs to specified file\n");
-      return SUCCESS;
+      exit(SUCCESS);
     case 'f':
       log_info("Bytecode file specified: %s", optarg);
       *bytecode_file = optarg;
@@ -64,6 +64,17 @@ ErrorCode parse_args(int argc, char *argv[], char **bytecode_file,
       return ERR_INVALID_OPERAND;
     }
   }
+
+  if (optind < argc && *bytecode_file == NULL) {
+    *bytecode_file = argv[optind];
+    log_info("Bytecode file from positional argument: %s", *bytecode_file);
+  }
+
+  if (*bytecode_file == NULL) {
+    log_error("No bytecode file specified.");
+    return ERR_INVALID_OPERAND;
+  }
+
   return SUCCESS;
 }
 
@@ -96,7 +107,7 @@ int main(int argc, char *argv[]) {
     log_error("Failed to load bytecode");
     goto CLEANUP;
   }
-  status = load_program(&vm, bytecode_buffer, size);
+  status = load_program(&vm, bytecode_buffer, size, entry_point);
   if (status != SUCCESS) {
     log_error("Failed to load program into VM");
     goto CLEANUP;

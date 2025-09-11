@@ -12,12 +12,20 @@ typedef enum {
   OP_POP,
   OP_LOAD,
   OP_STORE,
+  OP_DUP,
+  OP_SWAP,
+  OP_OVER,
+  OP_CLEAR,
+  OP_PICK,
 
   // Arithmetic
   OP_ADD,
   OP_SUB,
   OP_MUL,
   OP_DIV,
+  OP_MOD,
+  OP_INC,
+  OP_DEC,
 
   // Comparison
   OP_CMP_EQ,
@@ -30,11 +38,14 @@ typedef enum {
   // Control Flow
   OP_JMP,
   OP_JMPZ,
+  OP_JMPNZ,
   OP_CALL,
   OP_RET,
+  OP_NOP,
 
-  // Output
+  // I/O
   OP_PRINT,
+  OP_INPUT,
 
   // Halt
   OP_HALT

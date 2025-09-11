@@ -16,8 +16,9 @@ void test_init_vm_success(void) {
 
 void test_load_program_invalid_args(void) {
   Nano_VM vm;
-  ErrorCode err = load_program(&vm, NULL, 0);
-  TEST_ASSERT_EQUAL_INT(ERR_NULL_POINTER, err);
+
+  ErrorCode err = load_program(&vm, NULL, 0, 0);
+  TEST_ASSERT_EQUAL_INT(ERR_INVALID_OPERAND, err);
 }
 
 void test_execute_vm_halt(void) {
@@ -32,7 +33,7 @@ void test_execute_vm_halt(void) {
   TEST_ASSERT_EQUAL_INT(SUCCESS, status);
   status = load_bytecode(bytecode_file, &bytecode_buffer, &size, &entry_point);
   TEST_ASSERT_EQUAL_INT(SUCCESS, status);
-  status = load_program(&vm, bytecode_buffer, size);
+  status = load_program(&vm, bytecode_buffer, size, entry_point);
   TEST_ASSERT_EQUAL_INT(SUCCESS, status);
   status = execute_vm(&vm);
   TEST_ASSERT_EQUAL_INT(SUCCESS, status);

@@ -1,6 +1,5 @@
 #include "vm.h"
 #include "bytecode.h"
-#include "bytecode_format.h"
 #include "errno.h"
 #include "log.h"
 #include <stdint.h>
@@ -31,7 +30,8 @@ ErrorCode init_vm(Nano_VM *vm) {
   return status;
 }
 
-ErrorCode load_program(Nano_VM *vm, const uint8_t *code, size_t code_size) {
+ErrorCode load_program(Nano_VM *vm, const uint8_t *code, size_t code_size,
+                       uint32_t entry_point) {
   ErrorCode status = SUCCESS;
   if (NULL == vm) {
     log_error("VM instance is NULL");
@@ -60,8 +60,6 @@ ErrorCode load_program(Nano_VM *vm, const uint8_t *code, size_t code_size) {
   memcpy(vm->code, code, code_size);
   log_info("Bytecode loaded into VM (%zu bytes)", code_size);
 
-  size_t entry_point;
-  memcpy(&entry_point, code + BYTECODE_ENTRY_POINT_OFFSET, sizeof(uint32_t));
   vm->ip = entry_point;
   log_info("Entry point set to: %zu", entry_point);
   return status;
@@ -152,8 +150,7 @@ ErrorCode execute_vm(Nano_VM *vm) {
         status = ERR_STACK_UNDERFLOW;
         goto VM_EXIT;
       }
-      int32_t value;
-      memcpy(&value, &vm->stack[--vm->sp], sizeof(int32_t));
+      --vm->sp;
       vm->ip += info.length;
       break;
     }
@@ -197,6 +194,65 @@ ErrorCode execute_vm(Nano_VM *vm) {
         goto VM_EXIT;
       }
       vm->call_stack[vm->call_sp - 1].locals[index] = vm->stack[--vm->sp];
+      vm->ip += info.length;
+      break;
+    }
+    case OP_DUP: {
+      if (vm->ip + info.length > vm->code_size) {
+        log_error("DUP instruction out of bounds");
+        status = ERR_INVALID_OPERAND;
+        goto VM_EXIT;
+      }
+      if (vm->sp == 0) {
+        log_error("Stack underflow on DUP");
+        status = ERR_STACK_UNDERFLOW;
+        goto VM_EXIT;
+      }
+      if (vm->sp >= vm->stack_size) {
+        log_error("Stack overflow on DUP");
+        status = ERR_STACK_OVERFLOW;
+        goto VM_EXIT;
+      }
+      vm->stack[vm->sp] = vm->stack[vm->sp - 1];
+      vm->sp++;
+      vm->ip += info.length;
+      break;
+    }
+    case OP_SWAP: {
+      if (vm->ip + info.length > vm->code_size) {
+        log_error("SWAP instruction out of bounds");
+        status = ERR_INVALID_OPERAND;
+        goto VM_EXIT;
+      }
+      if (vm->sp < 2) {
+        log_error("Stack underflow on SWAP");
+        status = ERR_STACK_UNDERFLOW;
+        goto VM_EXIT;
+      }
+      int32_t temp = vm->stack[vm->sp - 1];
+      vm->stack[vm->sp - 1] = vm->stack[vm->sp - 2];
+      vm->stack[vm->sp - 2] = temp;
+      vm->ip += info.length;
+      break;
+    }
+    case OP_OVER: {
+      if (vm->ip + info.length > vm->code_size) {
+        log_error("OVER instruction out of bounds");
+        status = ERR_INVALID_OPERAND;
+        goto VM_EXIT;
+      }
+      if (vm->sp < 2) {
+        log_error("Stack underflow on OVER");
+        status = ERR_STACK_UNDERFLOW;
+        goto VM_EXIT;
+      }
+      if (vm->sp >= vm->stack_size) {
+        log_error("Stack overflow on OVER");
+        status = ERR_STACK_OVERFLOW;
+        goto VM_EXIT;
+      }
+      vm->stack[vm->sp] = vm->stack[vm->sp - 2];
+      vm->sp++;
       vm->ip += info.length;
       break;
     }
